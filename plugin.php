@@ -52,7 +52,7 @@ if (!class_exists('petfinder404')) {
 				if(!get_option('pf404_options') || !get_option('pf404_options')['pf404_field_apikey'] || get_option('pf404_options')['pf404_field_explicitperm'] !== "Yes") {
 				?>				
 				<div class="notice notice-error is-dismissible">
-					<p><?php _e('PF404 for PetFinder requires an API KEY and Link Permission granted. <a href="/wp-admin/options-general.php?page=pf404" >more info</a>', 'pf404'); ?></p>
+					<p><?php _e('PF404 for PetFinder requires an API KEY and Link Permission granted. <a href="' . admin_url('options-general.php?page=pf404') . '" >more info</a>', 'pf404'); ?></p>
 				</div>
 				
 			<?php } }
@@ -103,19 +103,14 @@ if (!class_exists('petfinder404')) {
 			$table_name = self::get_table_name();
 			for ($i = 0; $i < 18; $i++) {
 
-				$curl = curl_init();
 				$url = 'http://api.petfinder.com/pet.getRandom';
 
 				if ($data) {
 					$url = sprintf("%s?%s", $url, http_build_query($data));
-				}
+				}			
 
-				curl_setopt($curl, CURLOPT_URL, $url);
-				curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-				$result = curl_exec($curl);
-
-				curl_close($curl);		
+				$response = wp_remote_get( $url );
+				$result = wp_remote_retrieve_body( $response );
 
 				$jdecode = json_decode($result);
 				if ($jdecode->petfinder) {
